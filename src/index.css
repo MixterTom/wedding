@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Ephesis&family=Great+Vibes&display=swap');
+
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  line-height: 1.5;
+  font-weight: 400;
+
+  --bg: #f5f2ec;
+  --card: #ffffff;
+  --border-subtle: #e5e7eb;
+  --text: #1f2933;
+  --muted: #6b7280;
+  --accent: #b45309;
+  --accent-soft: #f97316;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 10% 0, rgba(244, 180, 126, 0.35), transparent 60%),
+    radial-gradient(1000px 700px at 100% 20%, rgba(223, 166, 188, 0.25), transparent 60%),
+    var(--bg);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
