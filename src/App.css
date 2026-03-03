@@ -47,10 +47,12 @@
 
 .begin-overlay__names {
   font-family: 'Great Vibes', 'Ephesis', system-ui;
-  font-size: 44px;
-  line-height: 1.05;
+  font-size: clamp(32px, 8vw, 44px);
+  line-height: 1.1;
   letter-spacing: 0.02em;
   color: #ea2c2c;
+  word-break: keep-all;
+  text-wrap: balance;
 }
 
 .begin-overlay__date {
@@ -112,7 +114,7 @@
 
 .hero {
   position: relative;
-  height: 720px;
+  height: min(80vh, 720px);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 18px 45px rgba(148, 93, 59, 0.35);
@@ -153,9 +155,11 @@
 
 .hero__names {
   margin: 0 0 8px;
-  font-size: 42px;
+  font-size: clamp(30px, 7vw, 42px);
   letter-spacing: 0.06em;
   font-family: 'Great Vibes', 'Ephesis', system-ui;
+  word-break: keep-all;
+  text-wrap: balance;
 }
 
 .hero__datetime {
