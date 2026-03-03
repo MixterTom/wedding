@@ -6,10 +6,400 @@ const MUSIC_URL =
 
 // Cloudinary config (chỉ dùng public URL, không để lộ api_key / secret ở frontend)
 const CLOUDINARY_BASE =
-  'https://res.cloudinary.com/wedding/image/upload/f_auto,q_auto'
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/f_auto,q_auto'
 
-// Đổi biến này sang true sau khi bạn upload ảnh lên Cloudinary với đúng publicId
-const USE_CLOUDINARY = false
+// Các biến môi trường cho upload ảnh (cấu hình trong .env.local)
+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dko2gxv0s'
+const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY || '558998346157935'
+const CLOUDINARY_API_SECRET = import.meta.env.VITE_CLOUDINARY_API_SECRET || 'MZxCB35HsxuQej-vHmEjna1fBDg'
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+
+// Key để lưu mapping ảnh trong localStorage
+const STORAGE_KEY = 'wedding_image_mapping'
+
+// Type cho image mapping
+type ImageMapping = {
+  [originalPath: string]: {
+    publicId: string
+    url: string
+  }
+}
+
+// Hàm lấy image mapping từ localStorage
+function getImageMapping(): ImageMapping {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored ? JSON.parse(stored) : {}
+  } catch {
+    return {}
+  }
+}
+
+// Hàm lưu image mapping vào localStorage
+function saveImageMapping(mapping: ImageMapping) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(mapping))
+  } catch (err) {
+    console.error('Lỗi khi lưu vào localStorage:', err)
+  }
+}
+
+// Hàm lấy URL ảnh (ưu tiên Cloudinary nếu có trong localStorage)
+function getImageUrl(originalPath: string): string {
+  const mapping = getImageMapping()
+  const mapped = mapping[originalPath]
+  if (mapped?.publicId) {
+    // Tự động build URL từ public_id + CLOUDINARY_BASE
+    return `${CLOUDINARY_BASE}/${mapped.publicId}`
+  }
+  return originalPath
+}
+
+// Hàm lưu mapping sau khi upload
+function saveImageMappingAfterUpload(originalPath: string, publicId: string, url: string) {
+  const mapping = getImageMapping()
+  mapping[originalPath] = { publicId, url }
+  saveImageMapping(mapping)
+}
+
+// Hàm tính signature cho Cloudinary (dùng Web Crypto API)
+async function generateSignature(params: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(params)
+  const hashBuffer = await crypto.subtle.digest('SHA-1', data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  return hashHex
+}
+
+// Hàm resize và compress ảnh nếu quá lớn
+async function compressImage(file: File, maxSizeMB: number = 10): Promise<File> {
+  const maxSizeBytes = maxSizeMB * 1024 * 1024 // 10MB = 10485760 bytes
+
+  // Nếu file nhỏ hơn max size, không cần compress
+  if (file.size <= maxSizeBytes) {
+    return file
+  }
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let width = img.width
+        let height = img.height
+        let quality = 0.9
+
+        // Tính toán kích thước mới để giảm dung lượng
+        // Giảm dần kích thước và quality cho đến khi đạt yêu cầu
+        const maxDimension = 2048 // Giới hạn chiều rộng/cao tối đa
+
+        // Nếu ảnh quá lớn, resize xuống
+        if (width > maxDimension || height > maxDimension) {
+          const ratio = Math.min(maxDimension / width, maxDimension / height)
+          width = Math.floor(width * ratio)
+          height = Math.floor(height * ratio)
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Không thể tạo canvas context'))
+          return
+        }
+
+        // Vẽ ảnh lên canvas với kích thước mới
+        ctx.drawImage(img, 0, 0, width, height)
+
+        // Thử compress với các mức quality khác nhau
+        const tryCompress = (currentQuality: number) => {
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error('Không thể tạo blob từ canvas'))
+                return
+              }
+
+              // Nếu đã đạt yêu cầu hoặc quality quá thấp, dừng lại
+              if (blob.size <= maxSizeBytes || currentQuality <= 0.3) {
+                const compressedFile = new File(
+                  [blob],
+                  file.name,
+                  {
+                    type: file.type || 'image/jpeg',
+                    lastModified: Date.now()
+                  }
+                )
+                resolve(compressedFile)
+              } else {
+                // Giảm quality và thử lại
+                tryCompress(currentQuality - 0.1)
+              }
+            },
+            file.type || 'image/jpeg',
+            currentQuality
+          )
+        }
+
+        tryCompress(quality)
+      }
+      img.onerror = () => reject(new Error('Không thể load ảnh'))
+      img.src = e.target?.result as string
+    }
+    reader.onerror = () => reject(new Error('Không thể đọc file'))
+    reader.readAsDataURL(file)
+  })
+}
+
+async function uploadToCloudinary(
+  file: File,
+  originalPath: string
+): Promise<{ url: string; publicId: string } | null> {
+  if (!CLOUDINARY_CLOUD_NAME) {
+    alert('Chưa cấu hình Cloudinary Cloud Name!')
+    return null
+  }
+
+  // Kiểm tra và compress ảnh nếu quá lớn (>10MB)
+  let fileToUpload = file
+  const maxSizeMB = 10 // 10MB = 10485760 bytes
+
+  if (file.size > maxSizeMB * 1024 * 1024) {
+    try {
+      // Hiển thị thông báo đang compress
+      console.log(`File quá lớn (${(file.size / 1024 / 1024).toFixed(2)}MB), đang tự động giảm kích thước...`)
+
+      fileToUpload = await compressImage(file, maxSizeMB)
+
+      console.log(`Đã giảm xuống ${(fileToUpload.size / 1024 / 1024).toFixed(2)}MB`)
+    } catch (err) {
+      console.error('Lỗi khi compress ảnh:', err)
+      alert(`File quá lớn (${(file.size / 1024 / 1024).toFixed(2)}MB) và không thể tự động giảm kích thước. Vui lòng chọn ảnh nhỏ hơn 10MB.`)
+      return null
+    }
+  }
+
+  const formData = new FormData()
+  formData.append('file', fileToUpload)
+
+  // Nếu có upload preset, dùng unsigned upload (khuyến nghị cho frontend)
+  if (CLOUDINARY_UPLOAD_PRESET) {
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+  } else if (CLOUDINARY_API_KEY && CLOUDINARY_API_SECRET) {
+    // Nếu không có preset, dùng API Key và Secret (cần tính signature)
+    // Lưu ý: Cách này không an toàn cho production vì Secret bị expose
+    formData.append('api_key', CLOUDINARY_API_KEY)
+
+    // Tính timestamp
+    const timestamp = Math.round(new Date().getTime() / 1000)
+    formData.append('timestamp', timestamp.toString())
+
+    // Tính signature (cần dùng crypto để hash)
+    // Vì frontend không có crypto an toàn, mình sẽ dùng Web Crypto API
+    const paramsToSign = `timestamp=${timestamp}${CLOUDINARY_API_SECRET}`
+    const signature = await generateSignature(paramsToSign)
+    formData.append('signature', signature)
+  } else {
+    alert(
+      'Chưa cấu hình Cloudinary!\n\n' +
+      'Cần một trong hai:\n' +
+      '1. VITE_CLOUDINARY_UPLOAD_PRESET (khuyến nghị - unsigned preset)\n' +
+      '2. VITE_CLOUDINARY_API_KEY + VITE_CLOUDINARY_API_SECRET\n\n' +
+      'Vui lòng tạo file .env.local và restart dev server.'
+    )
+    return null
+  }
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      let errorMessage = 'Upload lên Cloudinary thất bại.\n\n'
+
+      try {
+        const errorData = JSON.parse(errorText)
+        if (errorData.error?.message) {
+          errorMessage += `Lỗi: ${errorData.error.message}\n\n`
+
+          if (errorData.error.message.includes('cloud_name is disabled')) {
+            errorMessage +=
+              'Cloud name bị vô hiệu hóa hoặc không tồn tại.\n' +
+              'Vui lòng kiểm tra:\n' +
+              '1. Đăng nhập Cloudinary Dashboard\n' +
+              '2. Kiểm tra Cloud name trong Settings → General\n' +
+              '3. Đảm bảo Cloud name đúng và đang hoạt động\n' +
+              `4. Hiện tại đang dùng: "${CLOUDINARY_CLOUD_NAME}"`
+          } else if (errorData.error.message.includes('upload_preset')) {
+            errorMessage +=
+              'Upload preset không hợp lệ.\n' +
+              'Vui lòng kiểm tra:\n' +
+              '1. Settings → Upload → Upload presets\n' +
+              '2. Tạo preset mới với Signing mode = "Unsigned"\n' +
+              `3. Đảm bảo tên preset đúng: "${CLOUDINARY_UPLOAD_PRESET}"`
+          }
+        }
+      } catch {
+        errorMessage += `Chi tiết: ${errorText}`
+      }
+
+      console.error('Cloudinary upload error:', errorText)
+      alert(errorMessage)
+      return null
+    }
+
+    const data = (await res.json()) as { secure_url?: string; public_id?: string }
+    if (!data.secure_url || !data.public_id) {
+      alert('Upload thành công nhưng không nhận được URL hoặc public_id.')
+      return null
+    }
+
+    const publicId = data.public_id
+    const url = data.secure_url
+
+    // Tự động lưu vào localStorage
+    saveImageMappingAfterUpload(originalPath, publicId, url)
+
+    return { url, publicId }
+  } catch (err) {
+    console.error('Cloudinary upload exception', err)
+    alert(`Có lỗi khi upload lên Cloudinary:\n${err instanceof Error ? err.message : String(err)}`)
+    return null
+  }
+}
+
+type EditableImageProps = {
+  initialSrc: string
+  alt: string
+  className?: string
+  editMode: boolean
+  label?: string
+  loading?: 'lazy' | 'eager'
+}
+
+function EditableImage({ initialSrc, alt, className, editMode, label, loading }: EditableImageProps) {
+  // Tự động load từ localStorage khi component mount
+  const [src, setSrc] = useState(() => getImageUrl(initialSrc))
+  const [uploading, setUploading] = useState(false)
+  const [publicId, setPublicId] = useState<string | null>(() => {
+    const mapping = getImageMapping()
+    return mapping[initialSrc]?.publicId || null
+  })
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  // Reload khi localStorage thay đổi (từ component khác)
+  useEffect(() => {
+    const handleImageUpdate = (e?: CustomEvent) => {
+      // Nếu có event detail và match với initialSrc của component này, update ngay
+      if (e?.detail?.originalPath === initialSrc) {
+        const mapping = getImageMapping()
+        const mapped = mapping[initialSrc]
+        if (mapped?.publicId) {
+          const cloudinaryUrl = `${CLOUDINARY_BASE}/${mapped.publicId}`
+          setSrc(cloudinaryUrl)
+          setPublicId(mapped.publicId)
+        }
+      } else {
+        // Nếu không match hoặc không có detail, reload từ localStorage
+        const newUrl = getImageUrl(initialSrc)
+        setSrc(newUrl)
+        const mapping = getImageMapping()
+        setPublicId(mapping[initialSrc]?.publicId || null)
+      }
+    }
+
+    // Listen cả storage event (từ tab khác) và custom event (từ cùng tab)
+    window.addEventListener('storage', handleImageUpdate as EventListener)
+    window.addEventListener('imageMappingUpdated', handleImageUpdate as EventListener)
+
+    // Check lại mỗi khi editMode thay đổi (để sync với các component khác)
+    handleImageUpdate()
+
+    return () => {
+      window.removeEventListener('storage', handleImageUpdate as EventListener)
+      window.removeEventListener('imageMappingUpdated', handleImageUpdate as EventListener)
+    }
+  }, [initialSrc, editMode])
+
+  const handleSelectFile = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    if (uploading) return
+    inputRef.current?.click()
+  }
+
+  const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation()
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    const result = await uploadToCloudinary(file, initialSrc)
+    setUploading(false)
+
+    if (!result) return
+
+    // Tự động build URL từ public_id
+    const cloudinaryUrl = `${CLOUDINARY_BASE}/${result.publicId}`
+    setSrc(cloudinaryUrl)
+    setPublicId(result.publicId)
+
+    // Trigger custom event để các component khác cũng update (kể cả trong cùng tab)
+    window.dispatchEvent(
+      new CustomEvent('imageMappingUpdated', {
+        detail: { originalPath: initialSrc, publicId: result.publicId }
+      })
+    )
+    // Cũng trigger storage event để sync với tab khác
+    window.dispatchEvent(new Event('storage'))
+  }
+
+  return (
+    <div className="editable-image">
+      <img src={src} alt={alt} className={className} loading={loading} />
+      {editMode && (
+        <>
+          <button
+            type="button"
+            className="editable-image__btn"
+            onClick={handleSelectFile}
+            disabled={uploading}
+          >
+            {uploading ? 'Đang upload...' : 'Đổi ảnh (Cloudinary)'}
+          </button>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={handleChangeFile}
+          />
+          {publicId && (
+            <div className="editable-image__info">
+              {label && <div className="editable-image__label">{label}</div>}
+              <div className="editable-image__row">
+                <span>URL:</span>
+                <input readOnly value={src} onClick={(e) => e.currentTarget.select()} />
+              </div>
+              <div className="editable-image__row">
+                <span>Public ID:</span>
+                <input readOnly value={publicId} onClick={(e) => e.currentTarget.select()} />
+              </div>
+              <div className="editable-image__note">
+                ✓ Đã tự động lưu vào localStorage. Trang sẽ tự dùng Cloudinary khi reload.
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
 
 const ALBUM_IMAGE_IDS = [
   'TL_01',
@@ -29,10 +419,6 @@ const ALBUM_IMAGE_IDS = [
   'TL_15'
 ]
 
-const ALBUM_IMAGES = ALBUM_IMAGE_IDS.map((id) =>
-  USE_CLOUDINARY ? `${CLOUDINARY_BASE}/${id}` : `/album/${id}.jpg`
-)
-
 const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
 
 function App() {
@@ -44,11 +430,31 @@ function App() {
     minutes: '--',
     seconds: '--'
   })
+  const [editMode, setEditMode] = useState(false)
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [heroBgUrl, setHeroBgUrl] = useState(() => getImageUrl('/hero.jpg'))
+  const [viewingImage, setViewingImage] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const heroRef = useRef<HTMLElement | null>(null)
+  const heroBgRef = useRef<HTMLDivElement | null>(null)
+
+  // Reload hero background khi localStorage thay đổi
+  useEffect(() => {
+    const handleImageUpdate = () => {
+      setHeroBgUrl(getImageUrl('/hero.jpg'))
+    }
+    // Listen cả storage event (từ tab khác) và custom event (từ cùng tab)
+    window.addEventListener('storage', handleImageUpdate)
+    window.addEventListener('imageMappingUpdated', handleImageUpdate)
+    // Check lại khi editMode thay đổi
+    handleImageUpdate()
+    return () => {
+      window.removeEventListener('storage', handleImageUpdate)
+      window.removeEventListener('imageMappingUpdated', handleImageUpdate)
+    }
+  }, [editMode])
 
   const toggleMusic = () => {
     const audio = audioRef.current
@@ -163,6 +569,14 @@ function App() {
 
   return (
     <div className="invite-page">
+      <button
+        className={`image-edit-toggle ${editMode ? 'is-on' : ''}`}
+        type="button"
+        onClick={() => setEditMode((v) => !v)}
+      >
+        {editMode ? 'Tắt chỉnh ảnh' : 'Bật chỉnh ảnh'}
+      </button>
+
       {isBeginOpen && (
         <div
           className={`begin-overlay ${isBeginClosing ? 'is-closing' : ''}`}
@@ -174,7 +588,13 @@ function App() {
             if (e.key === 'Enter' || e.key === ' ') closeBegin()
           }}
         >
-          <img className="begin-overlay__img" src="/begin.gif" alt="" />
+          <EditableImage
+            initialSrc="/begin.gif"
+            alt=""
+            className="begin-overlay__img"
+            editMode={editMode}
+            label="Ảnh màn mở thiệp"
+          />
           <div className="begin-overlay__content">
             <div className="begin-overlay__names">Thanh Long &amp; Cẩm Thu</div>
             <div className="begin-overlay__date">05.04.2026</div>
@@ -192,7 +612,13 @@ function App() {
 
       {/* Start screen */}
       <section className="start-screen fade-in">
-        <img className="start-screen__img" src="/start.gif" alt="Thiệp cưới" />
+        <EditableImage
+          initialSrc="/start.gif"
+          alt="Thiệp cưới"
+          className="start-screen__img"
+          editMode={editMode}
+          label="Ảnh trang bìa"
+        />
         <button
           type="button"
           className="start-screen__cta"
@@ -204,7 +630,22 @@ function App() {
 
       {/* Hero */}
       <section className="hero" ref={heroRef}>
-        <div className="hero__bg" />
+        <div
+          ref={heroBgRef}
+          className="hero__bg"
+          style={{ backgroundImage: `url(${heroBgUrl})` }}
+        />
+        {editMode && (
+          <div className="hero__edit-overlay">
+            <EditableImage
+              initialSrc="/hero.jpg"
+              alt="Hero background"
+              className="hero__edit-image"
+              editMode={editMode}
+              label="Ảnh nền Hero"
+            />
+          </div>
+        )}
         <div className="hero__overlay" />
         <div className="hero__content">
           <p className="hero__label">THƯ MỜI TIỆC CƯỚI</p>
@@ -253,11 +694,13 @@ function App() {
         <div className="couple-intro__content">
           <figure className="couple-card">
             <div className="couple-card__avatar-wrapper fade-in">
-              <img
-                className="couple-card__avatar"
-                src="/nam.jpg"
+              <EditableImage
+                initialSrc="/nam.jpg"
                 alt="Chú rể Thanh Long"
+                className="couple-card__avatar"
+                editMode={editMode}
                 loading="lazy"
+                label="Ảnh chú rể"
               />
             </div>
             <figcaption className="couple-card__body">
@@ -272,11 +715,13 @@ function App() {
 
           <figure className="couple-card">
             <div className="couple-card__avatar-wrapper fade-in delay-1">
-              <img
-                className="couple-card__avatar"
-                src="/nu.jpg"
+              <EditableImage
+                initialSrc="/nu.jpg"
                 alt="Cô dâu Cẩm Thu"
+                className="couple-card__avatar"
+                editMode={editMode}
                 loading="lazy"
+                label="Ảnh cô dâu"
               />
             </div>
             <figcaption className="couple-card__body">
@@ -442,7 +887,13 @@ function App() {
             {['/highlight-1.jpg', '/highlight.jpg', '/highlight-1.jpg', '/highlight.jpg'].map(
               (src, idx) => (
                 <figure key={`${src}-${idx}`} className="highlight__item fade-in">
-                  <img src={src} alt="Khoảnh khắc của Thanh Long &amp; Cẩm Thu" loading="lazy" />
+                  <EditableImage
+                    initialSrc={src}
+                    alt="Khoảnh khắc của Thanh Long &amp; Cẩm Thu"
+                    editMode={editMode}
+                    loading="lazy"
+                    label={`Highlight ${idx + 1}`}
+                  />
                 </figure>
               )
             )}
@@ -454,11 +905,30 @@ function App() {
       <section className="section gallery" id="album">
         <h2 className="gallery__title">Album hình cưới</h2>
         <div className="gallery__grid">
-          {ALBUM_IMAGES.map((src) => (
-            <figure key={src} className="gallery__item fade-in">
-              <img src={src} alt="Album cưới Thanh Long &amp; Cẩm Thu" loading="lazy" />
-            </figure>
-          ))}
+          {ALBUM_IMAGE_IDS.map((id) => {
+            const originalPath = `/album/${id}.jpg`
+            const imageUrl = getImageUrl(originalPath)
+            return (
+              <figure
+                key={id}
+                className="gallery__item fade-in"
+                onClick={() => {
+                  if (!editMode) {
+                    setViewingImage(imageUrl)
+                  }
+                }}
+                style={{ cursor: editMode ? 'default' : 'pointer' }}
+              >
+                <EditableImage
+                  initialSrc={originalPath}
+                  alt="Album cưới Thanh Long &amp; Cẩm Thu"
+                  editMode={editMode}
+                  loading="lazy"
+                  label={`Ảnh album ${id}`}
+                />
+              </figure>
+            )
+          })}
         </div>
       </section>
 
@@ -560,6 +1030,33 @@ function App() {
               Bạn có thể thêm thông tin số tài khoản, QR code, hoặc hướng dẫn gửi mừng cưới
               tại đây.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal xem ảnh full size */}
+      {viewingImage && (
+        <div
+          className="image-viewer-backdrop"
+          onClick={() => setViewingImage(null)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setViewingImage(null)
+          }}
+        >
+          <button
+            type="button"
+            className="image-viewer__close"
+            onClick={() => setViewingImage(null)}
+            aria-label="Đóng"
+          >
+            ×
+          </button>
+          <div className="image-viewer__container" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={viewingImage}
+              alt="Album cưới Thanh Long &amp; Cẩm Thu"
+              className="image-viewer__img"
+            />
           </div>
         </div>
       )}
