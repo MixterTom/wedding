@@ -33,9 +33,17 @@ const ALBUM_IMAGES = ALBUM_IMAGE_IDS.map((id) =>
   USE_CLOUDINARY ? `${CLOUDINARY_BASE}/${id}` : `/album/${id}.jpg`
 )
 
+const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
+
 function App() {
   const [isBeginOpen, setIsBeginOpen] = useState(true)
   const [isBeginClosing, setIsBeginClosing] = useState(false)
+  const [countdown, setCountdown] = useState({
+    days: '--',
+    hours: '--',
+    minutes: '--',
+    seconds: '--'
+  })
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -78,6 +86,39 @@ function App() {
     elements.forEach((el) => observer.observe(el))
 
     return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date().getTime()
+      const diff = WEDDING_TIME.getTime() - now
+
+      if (diff <= 0) {
+        setCountdown({
+          days: '00',
+          hours: '00',
+          minutes: '00',
+          seconds: '00'
+        })
+        return
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+      const minutes = Math.floor((diff / (1000 * 60)) % 60)
+      const seconds = Math.floor((diff / 1000) % 60)
+
+      setCountdown({
+        days: String(days).padStart(2, '0'),
+        hours: String(hours).padStart(2, '0'),
+        minutes: String(minutes).padStart(2, '0'),
+        seconds: String(seconds).padStart(2, '0')
+      })
+    }
+
+    tick()
+    const id = window.setInterval(tick, 1000)
+    return () => window.clearInterval(id)
   }, [])
 
   useEffect(() => {
@@ -267,22 +308,33 @@ function App() {
       {/* Thời gian tổ chức */}
       <section className="section time">
         <p className="time__title">TIỆC MỪNG LỄ THÀNH HÔN</p>
-        <p className="time__subtitle">Vào lúc 11h00 | Thứ 5</p>
+        <p className="time__subtitle">Vào lúc 16h00 | Chủ Nhật</p>
 
-        <div className="time__headline">
-          <span className="time__headline-month">Tháng 06</span>
-          <span className="time__headline-divider" />
-          <span className="time__headline-day">26</span>
-          <span className="time__headline-divider" />
-          <span className="time__headline-year">2025</span>
+        <p className="time__special-date">Tháng 04&nbsp;&nbsp;•&nbsp;&nbsp;05&nbsp;&nbsp;•&nbsp;&nbsp;2026</p>
+
+        <div className="countdown">
+          <div className="countdown__item">
+            <div className="countdown__number">{countdown.days}</div>
+            <div className="countdown__label">Ngày</div>
+          </div>
+          <div className="countdown__item">
+            <div className="countdown__number">{countdown.hours}</div>
+            <div className="countdown__label">Giờ</div>
+          </div>
+          <div className="countdown__item">
+            <div className="countdown__number">{countdown.minutes}</div>
+            <div className="countdown__label">Phút</div>
+          </div>
+          <div className="countdown__item">
+            <div className="countdown__number">{countdown.seconds}</div>
+            <div className="countdown__label">Giây</div>
+          </div>
         </div>
-
-        <p className="time__lunar">(Tức ngày 02 Tháng 06 Năm Ất Tỵ)</p>
 
         <div className="calendar">
           <div className="calendar__header">
-            <span className="calendar__month-script">Tháng 6</span>
-            <span className="calendar__year-large">2025</span>
+            <span className="calendar__month-script">Tháng 4</span>
+            <span className="calendar__year-large">2026</span>
           </div>
 
           <div className="calendar__grid">
@@ -297,50 +349,50 @@ function App() {
             {/* Hàng 1 */}
             <div className="calendar__day empty" />
             <div className="calendar__day empty" />
-            <div className="calendar__day empty" />
-            <div className="calendar__day empty" />
-            <div className="calendar__day empty" />
-            <div className="calendar__day empty" />
             <div className="calendar__day">1</div>
-
-            {/* Hàng 2 */}
             <div className="calendar__day">2</div>
             <div className="calendar__day">3</div>
             <div className="calendar__day">4</div>
-            <div className="calendar__day">5</div>
+            <div className="calendar__day calendar__day--active">5</div>
+
+            {/* Hàng 2 */}
             <div className="calendar__day">6</div>
             <div className="calendar__day">7</div>
             <div className="calendar__day">8</div>
-
-            {/* Hàng 3 */}
             <div className="calendar__day">9</div>
             <div className="calendar__day">10</div>
             <div className="calendar__day">11</div>
             <div className="calendar__day">12</div>
+
+            {/* Hàng 3 */}
             <div className="calendar__day">13</div>
             <div className="calendar__day">14</div>
             <div className="calendar__day">15</div>
-
-            {/* Hàng 4 */}
             <div className="calendar__day">16</div>
             <div className="calendar__day">17</div>
             <div className="calendar__day">18</div>
             <div className="calendar__day">19</div>
+
+            {/* Hàng 4 */}
             <div className="calendar__day">20</div>
             <div className="calendar__day">21</div>
             <div className="calendar__day">22</div>
-
-            {/* Hàng 5 */}
             <div className="calendar__day">23</div>
             <div className="calendar__day">24</div>
             <div className="calendar__day">25</div>
-            <div className="calendar__day calendar__day--active">26</div>
+            <div className="calendar__day">26</div>
+
+            {/* Hàng 5 */}
             <div className="calendar__day">27</div>
             <div className="calendar__day">28</div>
             <div className="calendar__day">29</div>
+            <div className="calendar__day">30</div>
+            <div className="calendar__day empty" />
+            <div className="calendar__day empty" />
+            <div className="calendar__day empty" />
 
             {/* Hàng 6 */}
-            <div className="calendar__day">30</div>
+            <div className="calendar__day empty" />
             <div className="calendar__day empty" />
             <div className="calendar__day empty" />
             <div className="calendar__day empty" />
