@@ -34,10 +34,13 @@ const ALBUM_IMAGES = ALBUM_IMAGE_IDS.map((id) =>
 )
 
 function App() {
+  const [isBeginOpen, setIsBeginOpen] = useState(true)
+  const [isBeginClosing, setIsBeginClosing] = useState(false)
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const heroRef = useRef<HTMLElement | null>(null)
 
   const toggleMusic = () => {
     const audio = audioRef.current
@@ -77,6 +80,24 @@ function App() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (!isBeginOpen) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prevOverflow
+    }
+  }, [isBeginOpen])
+
+  const closeBegin = () => {
+    if (isBeginClosing) return
+    setIsBeginClosing(true)
+    window.setTimeout(() => {
+      setIsBeginOpen(false)
+      setIsBeginClosing(false)
+    }, 220)
+  }
+
   const handleSubmitRsvp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = new FormData(e.currentTarget)
@@ -87,8 +108,40 @@ function App() {
     e.currentTarget.reset()
   }
 
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    audio
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {
+        // một số trình duyệt chặn autoplay, khi đó người dùng có thể tự bấm nút nhạc
+      })
+  }, [])
+
   return (
     <div className="invite-page">
+      {isBeginOpen && (
+        <div
+          className={`begin-overlay ${isBeginClosing ? 'is-closing' : ''}`}
+          role="button"
+          tabIndex={0}
+          aria-label="Bấm để mở thiệp"
+          onClick={closeBegin}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') closeBegin()
+          }}
+        >
+          <img className="begin-overlay__img" src="/begin.gif" alt="" />
+          <div className="begin-overlay__content">
+            <div className="begin-overlay__names">Thanh Long &amp; Cẩm Thu</div>
+            <div className="begin-overlay__date">05.04.2026</div>
+          </div>
+          <div className="begin-overlay__hint">Chạm để mở thiệp</div>
+        </div>
+      )}
+
       <audio src={MUSIC_URL} ref={audioRef} loop />
 
       {/* Nút nhạc nổi */}
@@ -96,8 +149,20 @@ function App() {
         {isPlaying ? 'Tắt nhạc' : 'Bật nhạc'}
       </button>
 
+      {/* Start screen */}
+      <section className="start-screen fade-in">
+        <img className="start-screen__img" src="/start.gif" alt="Thiệp cưới" />
+        <button
+          type="button"
+          className="start-screen__cta"
+          onClick={() => heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        >
+          Xem thiệp
+        </button>
+      </section>
+
       {/* Hero */}
-      <section className="hero">
+      <section className="hero" ref={heroRef}>
         <div className="hero__bg" />
         <div className="hero__overlay" />
         <div className="hero__content">
