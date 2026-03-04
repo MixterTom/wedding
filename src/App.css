@@ -387,6 +387,30 @@
   font-weight: 500;
 }
 
+.family-card__parent {
+  display: block;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.family-card__parent-title {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+.family-card__parent-name {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b3b2a;
+  font-family: 'Ephesis', 'Great Vibes', system-ui;
+  letter-spacing: 0.04em;
+}
+
 .section-title {
   display: flex;
   align-items: center;
@@ -1179,6 +1203,19 @@
 
   .family-card__name {
     font-size: 20px;
+  }
+
+  .family-card__parents {
+    padding-top: 10px;
+  }
+
+  .family-card__parent-title {
+    font-size: 10px;
+  }
+
+  .family-card__parent-name {
+    font-size: 20px;
+    font-weight: 600;
   }
 
   .quote {
