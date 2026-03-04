@@ -642,7 +642,7 @@ function App() {
         {editMode && (
           <div className="hero__edit-overlay">
             <EditableImage
-              initialSrc="/hero.jpg"
+              initialSrc="https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg"
               alt="Hero background"
               className="hero__edit-image"
               editMode={editMode}
@@ -699,7 +699,7 @@ function App() {
           <figure className="couple-card">
             <div className="couple-card__avatar-wrapper fade-in">
               <EditableImage
-                initialSrc="/nam.jpg"
+                initialSrc="https://res.cloudinary.com/dko2gxv0s/image/upload/v1772590583/puay6ntgyn8ymhzmoyuv.jpg"
                 alt="Chú rể Thanh Long"
                 className="couple-card__avatar"
                 editMode={editMode}
@@ -720,7 +720,7 @@ function App() {
           <figure className="couple-card">
             <div className="couple-card__avatar-wrapper fade-in delay-1">
               <EditableImage
-                initialSrc="/nu.jpg"
+                initialSrc="https://res.cloudinary.com/dko2gxv0s/image/upload/v1772590565/oymf1a5yzt0kyyuli6s0.jpg"
                 alt="Cô dâu Cẩm Thu"
                 className="couple-card__avatar"
                 editMode={editMode}
@@ -855,19 +855,22 @@ function App() {
       {/* Địa điểm + Google Maps */}
       <section className="section location" id="location">
         <h2 className="location__title">Địa điểm tổ chức</h2>
+
         <p className="location__venue">
-          Nhà Hàng Tiệc Cưới
-          <br />
-          <strong>Sunrise Ánh Nhung</strong>
+          <strong>Hidden Mansions Saigon Resort</strong>
         </p>
+
         <p className="location__address">
-          30 Điện Biên Phủ, Phường Nghĩa Trung, Gia Nghĩa, Đắk Nông
+          106/47 Nguyễn Thị Tú, Bình Hưng Hòa B, Bình Tân, TP. Hồ Chí Minh
         </p>
 
         <div className="location__map">
           <iframe
-            title="Sunrise Ánh Nhung"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3531.7014036387445!2d107.6987654!3d11.9982128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3173c709fda2b809%3A0x75dfcaae46689a22!2zTmjDoCBIw6FuZyDDgW5oIE5odW5n!5e1!3m2!1svi!2s!4v1749086946082!5m2!1svi!2s"
+            title="Hidden Mansions Saigon Resort"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.693347463662!2d106.6991154!3d10.8572493!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317529d01d0ca585%3A0xb1a9a2b81dfaa8b6!2sHidden%20Mansions%20Saigon%20Resort!5e0!3m2!1svi!2s!4v1700000000000"
+            width="100%"
+            height="350"
+            style={{ border: 0 }}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
@@ -875,7 +878,7 @@ function App() {
 
         <a
           className="btn btn--outline location__btn"
-          href="https://maps.app.goo.gl/zs6Sua3TbxHNbW6u7"
+          href="https://maps.app.goo.gl/w7NWDQ7cQwjC8h3Y7"
           target="_blank"
           rel="noreferrer"
         >
@@ -888,7 +891,14 @@ function App() {
         <h2 className="highlight__title">Khoảnh khắc đặc biệt</h2>
         <div className="highlight__marquee">
           <div className="highlight__track">
-            {['/highlight-1.jpg', '/highlight.jpg', '/highlight-1.jpg', '/highlight.jpg'].map(
+            {['https://res.cloudinary.com/dko2gxv0s/image/upload/v1772591914/nrmxmxkgkm6ta0syhtxs.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592132/sozgpsix6oqhkdvrta59.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592778/mto81e1r3vyfpzxbywt4.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592875/pauluqwvhz1en5m0mkrg.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772593588/wekybeliviieszwclymg.jpg'
+            ].map(
               (src, idx) => (
                 <figure key={`${src}-${idx}`} className="highlight__item fade-in">
                   <EditableImage
@@ -1026,10 +1036,27 @@ function App() {
               ×
             </button>
             <h3 className="modal__title">Gửi mừng cưới</h3>
-            <p className="modal__body">
-              Bạn có thể thêm thông tin số tài khoản, QR code, hoặc hướng dẫn gửi mừng cưới
-              tại đây.
-            </p>
+            <div className="modal__body">
+              <p style={{ marginBottom: 12 }}>
+                Bạn có thể quét mã QR bên dưới để gửi lời chúc &amp; mừng cưới đến vợ chồng
+                Thanh Long &amp; Cẩm Thu. Xin chân thành cảm ơn tấm lòng của bạn!
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+                <img
+                  src="/banking.jpg"
+                  alt="QR mừng cưới NGUYEN TRAN THANH LONG"
+                  style={{
+                    maxWidth: '260px',
+                    width: '100%',
+                    borderRadius: 16,
+                    boxShadow: '0 10px 30px rgba(15,23,42,0.2)'
+                  }}
+                />
+              </div>
+              <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center' }}>
+                NGUYEN TRAN THANH LONG • 1880297846 • BIDV - PGD Nguyễn Oanh
+              </p>
+            </div>
           </div>
         </div>
       )}
