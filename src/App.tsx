@@ -653,7 +653,7 @@ function App() {
         <div className="hero__content">
           <p className="hero__label">THƯ MỜI TIỆC CƯỚI</p>
           <h1 className="hero__names">Thanh Long &amp; Cẩm Thu</h1>
-          <p className="hero__datetime">Chủ Nhật - 16:00 • 05.04.2026</p>
+          <p className="hero__datetime">Chủ Nhật - 17:00 • 05.04.2026</p>
         </div>
       </section>
 
@@ -766,9 +766,14 @@ function App() {
       {/* Thời gian tổ chức */}
       <section className="section time">
         <p className="time__title">TIỆC MỪNG LỄ THÀNH HÔN</p>
-        <p className="time__subtitle">Vào lúc 16h00 | Chủ Nhật</p>
+        <p className="time__subtitle">
+          Vào lúc <span className="time__subtitle-time">17h00</span> | Chủ Nhật
+        </p>
 
-        <p className="time__special-date">Tháng 04&nbsp;&nbsp;•&nbsp;&nbsp;05&nbsp;&nbsp;•&nbsp;&nbsp;2026</p>
+        <p className="time__special-date">
+          Ngày 05&nbsp;&nbsp;•&nbsp;&nbsp;04&nbsp;&nbsp;•&nbsp;&nbsp;2026
+        </p>
+        <p className="time__lunar">( Nhằm ngày 18 tháng 02 năm Bính Ngọ )</p>
 
         <div className="countdown">
           <div className="countdown__item">
