@@ -401,22 +401,26 @@ function EditableImage({ initialSrc, alt, className, editMode, label, loading }:
   )
 }
 
-const ALBUM_IMAGE_IDS = [
-  'TL_01',
-  'TL_02',
-  'TL_03',
-  'TL_04',
-  'TL_05',
-  'TL_06',
-  'TL_07',
-  'TL_08',
-  'TL_09',
-  'TL_10',
-  'TL_11',
-  'TL_12',
-  'TL_13',
-  'TL_14',
-  'TL_15'
+// Danh sách ảnh album (có thể là đường dẫn local hoặc URL Cloudinary)
+// Mặc định đang trỏ tới ảnh trong thư mục /public/album
+// Bạn có thể thay từng phần tử bằng URL Cloudinary thủ công, ví dụ:
+// 'https://res.cloudinary.com/dko2gxv0s/image/upload/v1234567890/wedding/ten_anh.jpg'
+const ALBUM_IMAGES = [
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581562/qxxkva89dhfcfjyqbsds.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581577/v23degxpjff7pbrgurhr.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581600/y6rjsy1asiaoikipeofb.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581648/n5wqlyw9hd088umj4s2z.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581654/mbmntoos9btxrfj4geai.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581659/s7fddk4nte6fzscwnxpv.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581667/vq9j0c8vcs8fqhxoyxkz.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581672/iw1ijruvjeyp1qj4fir3.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581680/tpycj8lx4pqb6ivtiwrq.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581687/asywya89m6q3qyuomccg.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581696/kpdrzwpwrenicghxstfm.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581704/mond4qr5azqx8zhj5vk8.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581710/yc5n7tteqkoteb3o94jl.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581718/ahfqwygdhr1qo0c4ezsf.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581728/ddxbhwg67o4yc9iktuqz.jpg'
 ]
 
 const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
@@ -905,30 +909,26 @@ function App() {
       <section className="section gallery" id="album">
         <h2 className="gallery__title">Album hình cưới</h2>
         <div className="gallery__grid">
-          {ALBUM_IMAGE_IDS.map((id) => {
-            const originalPath = `/album/${id}.jpg`
-            const imageUrl = getImageUrl(originalPath)
-            return (
-              <figure
-                key={id}
-                className="gallery__item fade-in"
-                onClick={() => {
-                  if (!editMode) {
-                    setViewingImage(imageUrl)
-                  }
-                }}
-                style={{ cursor: editMode ? 'default' : 'pointer' }}
-              >
-                <EditableImage
-                  initialSrc={originalPath}
-                  alt="Album cưới Thanh Long &amp; Cẩm Thu"
-                  editMode={editMode}
-                  loading="lazy"
-                  label={`Ảnh album ${id}`}
-                />
-              </figure>
-            )
-          })}
+          {ALBUM_IMAGES.map((src, index) => (
+            <figure
+              key={src}
+              className="gallery__item fade-in"
+              onClick={() => {
+                if (!editMode) {
+                  setViewingImage(src)
+                }
+              }}
+              style={{ cursor: editMode ? 'default' : 'pointer' }}
+            >
+              <EditableImage
+                initialSrc={src}
+                alt="Album cưới Thanh Long &amp; Cẩm Thu"
+                editMode={editMode}
+                loading="lazy"
+                label={`Ảnh album ${index + 1}`}
+              />
+            </figure>
+          ))}
         </div>
       </section>
 
