@@ -434,7 +434,9 @@ function App() {
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [heroBgUrl, setHeroBgUrl] = useState(() => getImageUrl('/hero.jpg'))
+  const [heroBgUrl, setHeroBgUrl] = useState(() =>
+    getImageUrl('https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg')
+  )
   const [viewingImage, setViewingImage] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const heroRef = useRef<HTMLElement | null>(null)
@@ -443,7 +445,9 @@ function App() {
   // Reload hero background khi localStorage thay đổi
   useEffect(() => {
     const handleImageUpdate = () => {
-      setHeroBgUrl(getImageUrl('/hero.jpg'))
+      setHeroBgUrl(
+        getImageUrl('https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg')
+      )
     }
     // Listen cả storage event (từ tab khác) và custom event (từ cùng tab)
     window.addEventListener('storage', handleImageUpdate)
@@ -539,6 +543,18 @@ function App() {
   const closeBegin = () => {
     if (isBeginClosing) return
     setIsBeginClosing(true)
+
+    // Khi đóng màn mở thiệp, bật nhạc luôn nếu chưa phát
+    const audio = audioRef.current
+    if (audio && !isPlaying) {
+      audio
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {
+          // nếu trình duyệt chặn play thì bỏ qua, người dùng vẫn có thể bấm nút nhạc
+        })
+    }
+
     window.setTimeout(() => {
       setIsBeginOpen(false)
       setIsBeginClosing(false)
@@ -622,13 +638,7 @@ function App() {
           editMode={editMode}
           label="Ảnh trang bìa"
         />
-        <button
-          type="button"
-          className="start-screen__cta"
-          onClick={() => heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-        >
-          Xem thiệp
-        </button>
+
       </section>
 
       {/* Hero */}
