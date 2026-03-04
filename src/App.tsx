@@ -892,6 +892,7 @@ function App() {
         <div className="highlight__marquee">
           <div className="highlight__track">
             {['https://res.cloudinary.com/dko2gxv0s/image/upload/v1772591914/nrmxmxkgkm6ta0syhtxs.jpg',
+              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772593725/mogn13obmayy7n2ozlsc.jpg',
               'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592132/sozgpsix6oqhkdvrta59.jpg',
               'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592778/mto81e1r3vyfpzxbywt4.jpg',
               'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592875/pauluqwvhz1en5m0mkrg.jpg',
