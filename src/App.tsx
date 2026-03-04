@@ -430,7 +430,7 @@ function App() {
     minutes: '--',
     seconds: '--'
   })
-  const [editMode, setEditMode] = useState(false)
+  const editMode = false
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
