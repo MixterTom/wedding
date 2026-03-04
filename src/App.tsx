@@ -401,10 +401,6 @@ function EditableImage({ initialSrc, alt, className, editMode, label, loading }:
   )
 }
 
-// Danh sách ảnh album (có thể là đường dẫn local hoặc URL Cloudinary)
-// Mặc định đang trỏ tới ảnh trong thư mục /public/album
-// Bạn có thể thay từng phần tử bằng URL Cloudinary thủ công, ví dụ:
-// 'https://res.cloudinary.com/dko2gxv0s/image/upload/v1234567890/wedding/ten_anh.jpg'
 const ALBUM_IMAGES = [
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581562/qxxkva89dhfcfjyqbsds.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581577/v23degxpjff7pbrgurhr.jpg',
@@ -573,13 +569,13 @@ function App() {
 
   return (
     <div className="invite-page">
-      <button
+      {/* <button
         className={`image-edit-toggle ${editMode ? 'is-on' : ''}`}
         type="button"
         onClick={() => setEditMode((v) => !v)}
       >
         {editMode ? 'Tắt chỉnh ảnh' : 'Bật chỉnh ảnh'}
-      </button>
+      </button> */}
 
       {isBeginOpen && (
         <div
@@ -610,9 +606,12 @@ function App() {
       <audio src={MUSIC_URL} ref={audioRef} loop />
 
       {/* Nút nhạc nổi */}
-      <button className="music-toggle" type="button" onClick={toggleMusic}>
-        {isPlaying ? 'Tắt nhạc' : 'Bật nhạc'}
-      </button>
+      <button
+        className={`music-toggle ${isPlaying ? 'music-toggle--playing' : ''}`}
+        type="button"
+        onClick={toggleMusic}
+        aria-label={isPlaying ? 'Tắt nhạc' : 'Bật nhạc'}
+      />
 
       {/* Start screen */}
       <section className="start-screen fade-in">
@@ -672,9 +671,14 @@ function App() {
             <p className="family-card__name">Thanh Long</p>
             <p className="family-card__role">Chú Rể</p>
             <p className="family-card__parents">
-              ÔNG NGUYỄN THANH HẢI
-              <br />
-              BÀ TRẦN THỊ UYỂN
+              <span className="family-card__parent">
+                <span className="family-card__parent-title">Ông</span>
+                <span className="family-card__parent-name">Nguyễn Thanh Hải</span>
+              </span>
+              <span className="family-card__parent">
+                <span className="family-card__parent-title">Bà</span>
+                <span className="family-card__parent-name">Trần Thị Uyển</span>
+              </span>
             </p>
           </div>
 
@@ -683,9 +687,14 @@ function App() {
             <p className="family-card__name">Cẩm Thu</p>
             <p className="family-card__role">Cô Dâu</p>
             <p className="family-card__parents">
-              ÔNG NGUYỄN THÀNH QUANG
-              <br />
-              BÀ NGUYỄN THỊ CẨM VÂN
+              <span className="family-card__parent">
+                <span className="family-card__parent-title">Ông</span>
+                <span className="family-card__parent-name">Nguyễn Thành Quang</span>
+              </span>
+              <span className="family-card__parent">
+                <span className="family-card__parent-title">Bà</span>
+                <span className="family-card__parent-name">Nguyễn Thị Cẩm Vân</span>
+              </span>
             </p>
           </div>
         </div>

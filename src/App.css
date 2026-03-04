@@ -890,11 +890,45 @@
   left: 16px;
   bottom: 16px;
   z-index: 20;
-  padding: 8px 12px;
+  width: 64px;
+  height: 64px;
+  padding: 0;
   border-radius: 999px;
-  border: 1px solid rgba(148, 93, 59, 0.4);
-  background: rgba(255, 255, 255, 0.9);
-  font-size: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  background:
+    url('https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg')
+      center/cover no-repeat;
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.45),
+    0 0 0 2px rgb(233, 227, 227);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.music-toggle::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.7);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(15, 23, 42, 0.9));
+}
+
+.music-toggle--playing {
+  animation: music-disc-spin 4s linear infinite;
+}
+
+@keyframes music-disc-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .image-edit-toggle {
