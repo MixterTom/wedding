@@ -613,9 +613,8 @@ function App() {
           />
           <div className="begin-overlay__content">
             <div className="begin-overlay__names">Thanh Long &amp; Cẩm Thu</div>
-            <div className="begin-overlay__date">05.04.2026</div>
+            <div className="begin-overlay__date">05.04.2026</div> 
           </div>
-          <div className="begin-overlay__hint">Chạm để mở thiệp</div>
         </div>
       )}
 

@@ -59,7 +59,6 @@
   text-align: center;
   padding: 10px 14px;
   color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.55);
 }
 
 .begin-overlay__names {
@@ -67,7 +66,8 @@
   font-size: clamp(32px, 8vw, 44px);
   line-height: 1.1;
   letter-spacing: 0.02em;
-  color: #ea2c2c;
+  color: #000000dd;
+  text-shadow: 2px 3px 6px rgba(0, 0, 0, 0.3);
   word-break: keep-all;
   text-wrap: balance;
 }
@@ -76,7 +76,7 @@
   margin-top: 8px;
   font-size: 13px;
   letter-spacing: 0.22em;
-  color: #ea2c2c;
+  color: #000000dd;
   text-transform: uppercase;
 }
 
