@@ -670,7 +670,6 @@
 
 .gallery__item {
   margin: 0;
-  border-radius: 10px;
   overflow: hidden;
   border: none;
 }
@@ -832,7 +831,6 @@
 
 .highlight__marquee {
   overflow: hidden;
-  border-radius: 16px;
 }
 
 .highlight__track {
@@ -842,10 +840,10 @@
 }
 
 .highlight__item {
+  padding: 0 3px;
   margin: 0;
   width: 260px;
   height: 360px;
-  border-radius: 16px;
   overflow: hidden;
 }
 
