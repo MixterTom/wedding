@@ -402,21 +402,21 @@ function EditableImage({ initialSrc, alt, className, editMode, label, loading }:
 }
 
 const ALBUM_IMAGES = [
-  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581562/qxxkva89dhfcfjyqbsds.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772870893/buzntq1wswdpcrpj2cwc.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581577/v23degxpjff7pbrgurhr.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581600/y6rjsy1asiaoikipeofb.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581648/n5wqlyw9hd088umj4s2z.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581654/mbmntoos9btxrfj4geai.jpg',
-  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581659/s7fddk4nte6fzscwnxpv.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772871081/qtqtj8s8r23bp3wwfj5u.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581667/vq9j0c8vcs8fqhxoyxkz.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581672/iw1ijruvjeyp1qj4fir3.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581680/tpycj8lx4pqb6ivtiwrq.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581687/asywya89m6q3qyuomccg.jpg',
-  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581696/kpdrzwpwrenicghxstfm.jpg',
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772871153/oaiqapzjwkerdwlhwb8d.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581704/mond4qr5azqx8zhj5vk8.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581710/yc5n7tteqkoteb3o94jl.jpg',
   'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581718/ahfqwygdhr1qo0c4ezsf.jpg',
-  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772581728/ddxbhwg67o4yc9iktuqz.jpg'
+  'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772871212/ppfasnrgjsnz075gtiwy.jpg'
 ]
 
 const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
@@ -424,6 +424,58 @@ const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
 // ✅ Dán URL Apps Script Web App của bạn vào đây sau khi deploy
 // Xem hướng dẫn trong file google_sheets_setup.md
 const GOOGLE_SHEET_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNE_81w8hWWkHztkvXJSyT316d7-Nu1u3a1YjZD4XyGFRKFvXbDuJMLH1joASvenBrUA/exec'
+
+function BankCopyButton({ accountNumber }: { accountNumber: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(accountNumber)
+      } else {
+        const textArea = document.createElement('textarea')
+        textArea.value = accountNumber
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-9999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textArea)
+      }
+
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1500)
+    } catch (err) {
+      console.error('Không thể sao chép số tài khoản:', err)
+      alert('Không thể sao chép. Vui lòng copy thủ công số tài khoản.')
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      style={{
+        display: 'block',
+        margin: '0 auto',
+        marginTop: 8,
+        padding: '10px 14px',
+        borderRadius: 10,
+        border: '1px solid rgba(148, 163, 184, 0.35)',
+        background: copied ? 'rgba(22, 163, 74, 0.14)' : 'rgba(255, 255, 255, 0.85)',
+        color: copied ? '#166534' : 'var(--text)',
+        cursor: 'pointer',
+        fontWeight: 600,
+        transition: 'all 0.2s ease'
+      }}
+      aria-label={`Sao chép số tài khoản ${accountNumber}`}
+      title="Sao chép số tài khoản"
+    >
+      {copied ? 'Đã sao chép ✓' : `Copy STK: ${accountNumber}`}
+    </button>
+  )
+}
 
 function App() {
   const [isBeginOpen, setIsBeginOpen] = useState(true)
@@ -434,7 +486,7 @@ function App() {
     minutes: '--',
     seconds: '--'
   })
-  const editMode = false
+  const [editMode, setEditMode] = useState(false)
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -605,13 +657,13 @@ function App() {
 
   return (
     <div className="invite-page">
-      {/* <button
+      <button
         className={`image-edit-toggle ${editMode ? 'is-on' : ''}`}
         type="button"
         onClick={() => setEditMode((v) => !v)}
       >
         {editMode ? 'Tắt chỉnh ảnh' : 'Bật chỉnh ảnh'}
-      </button> */}
+      </button>
 
       {isBeginOpen && (
         <div
@@ -633,7 +685,7 @@ function App() {
           />
           <div className="begin-overlay__content">
             <div className="begin-overlay__names">Thanh Long &amp; Cẩm Thu</div>
-            <div className="begin-overlay__date">05.04.2026</div> 
+            <div className="begin-overlay__date">05.04.2026</div>
           </div>
         </div>
       )}
@@ -695,36 +747,42 @@ function App() {
         </p>
 
         <div className="families__cards">
+          {/* Nhà Trai */}
           <div className="family-card">
             <p className="family-card__label">NHÀ TRAI</p>
             <p className="family-card__name">Thanh Long</p>
             <p className="family-card__role">Chú Rể</p>
-            <p className="family-card__parents">
-              <span className="family-card__parent">
+            <div className="family-card__parents">
+              <div className="family-card__parent">
                 <span className="family-card__parent-title">Ông</span>
                 <span className="family-card__parent-name">Nguyễn Thanh Hải</span>
-              </span>
-              <span className="family-card__parent">
+              </div>
+              <div className="family-card__parent">
                 <span className="family-card__parent-title">Bà</span>
                 <span className="family-card__parent-name">Trần Thị Uyển</span>
-              </span>
-            </p>
+              </div>
+            </div>
           </div>
 
+          {/* Divider trái tim */}
+          <div className="families__divider">
+          </div>
+
+          {/* Nhà Gái */}
           <div className="family-card">
             <p className="family-card__label">NHÀ GÁI</p>
             <p className="family-card__name">Cẩm Thu</p>
             <p className="family-card__role">Cô Dâu</p>
-            <p className="family-card__parents">
-              <span className="family-card__parent">
+            <div className="family-card__parents">
+              <div className="family-card__parent">
                 <span className="family-card__parent-title">Ông</span>
                 <span className="family-card__parent-name">Nguyễn Thành Quang</span>
-              </span>
-              <span className="family-card__parent">
+              </div>
+              <div className="family-card__parent">
                 <span className="family-card__parent-title">Bà</span>
                 <span className="family-card__parent-name">Nguyễn Thị Cẩm Vân</span>
-              </span>
-            </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -845,7 +903,10 @@ function App() {
             <div className="calendar__day">2</div>
             <div className="calendar__day">3</div>
             <div className="calendar__day">4</div>
-            <div className="calendar__day calendar__day--active">5</div>
+            <div className="calendar__day calendar__day--active">
+              <img src="/heart.png" alt="" className="calendar__day-heart" />
+              <span className="calendar__day-num">5</span>
+            </div>
 
             {/* Hàng 2 */}
             <div className="calendar__day">6</div>
@@ -1130,8 +1191,9 @@ function App() {
                   }}
                 />
               </div>
-              <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center' }}>
-                NGUYEN TRAN THANH LONG • 1880297846 • BIDV - PGD Nguyễn Oanh
+              <BankCopyButton accountNumber="1880297846" />
+              <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', marginTop: 8 }}>
+                NGUYEN TRAN THANH LONG • BIDV - PGD Nguyễn Oanh
               </p>
             </div>
           </div>
