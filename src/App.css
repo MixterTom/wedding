@@ -1102,6 +1102,60 @@
   width: 100%;
 }
 
+.modal__submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* RSVP result screens */
+.rsvp-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 8px 8px;
+  animation: rsvp-fade-in 0.35s ease;
+}
+
+@keyframes rsvp-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rsvp-result__icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.rsvp-result__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.rsvp-result--success .rsvp-result__title {
+  color: #b45309;
+}
+
+.rsvp-result--error .rsvp-result__title {
+  color: #dc2626;
+}
+
+.rsvp-result__desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.rsvp-result .btn {
+  margin-top: 8px;
+  min-width: 120px;
+}
+
 .modal__body {
   margin: 4px 0 0;
   font-size: 14px;

@@ -421,6 +421,10 @@ const ALBUM_IMAGES = [
 
 const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
 
+// ✅ Dán URL Apps Script Web App của bạn vào đây sau khi deploy
+// Xem hướng dẫn trong file google_sheets_setup.md
+const GOOGLE_SHEET_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNE_81w8hWWkHztkvXJSyT316d7-Nu1u3a1YjZD4XyGFRKFvXbDuJMLH1joASvenBrUA/exec'
+
 function App() {
   const [isBeginOpen, setIsBeginOpen] = useState(true)
   const [isBeginClosing, setIsBeginClosing] = useState(false)
@@ -433,6 +437,7 @@ function App() {
   const editMode = false
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
+  const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [isPlaying, setIsPlaying] = useState(false)
   const [heroBgUrl, setHeroBgUrl] = useState(() =>
     getImageUrl('https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg')
@@ -561,14 +566,29 @@ function App() {
     }, 220)
   }
 
-  const handleSubmitRsvp = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitRsvp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const form = new FormData(e.currentTarget)
-    // Ở đây bạn có thể gọi API hoặc gửi qua Google Sheets
-    console.log('RSVP:', Object.fromEntries(form.entries()))
-    alert('Cảm ơn bạn đã xác nhận tham dự!')
-    setIsRsvpOpen(false)
-    e.currentTarget.reset()
+    if (rsvpStatus === 'loading') return
+
+    const form = e.currentTarget
+    const data = Object.fromEntries(new FormData(form).entries())
+
+    setRsvpStatus('loading')
+    try {
+      // no-cors: browser không cho đọc response body, nhưng nếu không throw
+      // thì request đã tới được Apps Script → coi là thành công
+      await fetch(GOOGLE_SHEET_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(data),
+      })
+      // Nếu fetch không throw → ghi sheet đã thành công
+      setRsvpStatus('success')
+      form.reset()
+    } catch {
+      // Chỉ vào đây khi mạng thật sự lỗi (offline, DNS fail, v.v.)
+      setRsvpStatus('error')
+    }
   }
 
   useEffect(() => {
@@ -999,51 +1019,84 @@ function App() {
 
       {/* Popup RSVP */}
       {isRsvpOpen && (
-        <div className="modal-backdrop" onClick={() => setIsRsvpOpen(false)}>
+        <div className="modal-backdrop" onClick={() => { setIsRsvpOpen(false); setRsvpStatus('idle') }}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="modal__close"
-              onClick={() => setIsRsvpOpen(false)}
+              onClick={() => { setIsRsvpOpen(false); setRsvpStatus('idle') }}
             >
               ×
             </button>
             <h3 className="modal__title">Xác nhận tham dự</h3>
-            <form className="modal__form" onSubmit={handleSubmitRsvp}>
-              <label className="field">
-                <span>Tên của bạn là?</span>
-                <input name="full_name" required placeholder="Ví dụ: Nguyễn Văn A" />
-              </label>
-              <label className="field">
-                <span>Bạn là gì của Dâu Rể?</span>
-                <input
-                  name="relationship"
-                  placeholder="Bạn học, đồng nghiệp, người thân..."
-                />
-              </label>
-              <label className="field">
-                <span>Lời chúc đến Dâu Rể</span>
-                <textarea
-                  name="message"
-                  rows={3}
-                  placeholder="Gửi vài lời chúc dễ thương nhé!"
-                />
-              </label>
-              <label className="field">
-                <span>Bạn có tham dự không?</span>
-                <select name="status" defaultValue="">
-                  <option value="" disabled>
-                    Chọn giúp tụi mình
-                  </option>
-                  <option value="yes">Có thể tham dự</option>
-                  <option value="no">Không thể tham dự</option>
-                </select>
-              </label>
 
-              <button type="submit" className="btn btn--primary modal__submit">
-                Gửi ngay
-              </button>
-            </form>
+            {rsvpStatus === 'success' ? (
+              <div className="rsvp-result rsvp-result--success">
+                <div className="rsvp-result__icon">🎉</div>
+                <p className="rsvp-result__title">Cảm ơn bạn rất nhiều!</p>
+                <p className="rsvp-result__desc">Thông tin của bạn đã được ghi nhận. Hẹn gặp bạn trong ngày trọng đại của tụi mình nhé!</p>
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  onClick={() => { setIsRsvpOpen(false); setRsvpStatus('idle') }}
+                >
+                  Đóng
+                </button>
+              </div>
+            ) : rsvpStatus === 'error' ? (
+              <div className="rsvp-result rsvp-result--error">
+                <div className="rsvp-result__icon">😢</div>
+                <p className="rsvp-result__title">Gửi không thành công</p>
+                <p className="rsvp-result__desc">Có lỗi xảy ra, bạn thử lại sau nhé hoặc liên hệ trực tiếp với tụi mình!</p>
+                <button
+                  type="button"
+                  className="btn btn--primary"
+                  onClick={() => setRsvpStatus('idle')}
+                >
+                  Thử lại
+                </button>
+              </div>
+            ) : (
+              <form className="modal__form" onSubmit={handleSubmitRsvp}>
+                <label className="field">
+                  <span>Tên của bạn là?</span>
+                  <input name="full_name" required placeholder="Ví dụ: Nguyễn Văn A" />
+                </label>
+                <label className="field">
+                  <span>Bạn là gì của Dâu Rể?</span>
+                  <input
+                    name="relationship"
+                    placeholder="Bạn học, đồng nghiệp, người thân..."
+                  />
+                </label>
+                <label className="field">
+                  <span>Lời chúc đến Dâu Rể</span>
+                  <textarea
+                    name="message"
+                    rows={3}
+                    placeholder="Gửi vài lời chúc dễ thương nhé!"
+                  />
+                </label>
+                <label className="field">
+                  <span>Bạn có tham dự không?</span>
+                  <select name="status" defaultValue="">
+                    <option value="" disabled>
+                      Chọn giúp tụi mình
+                    </option>
+                    <option value="yes">Có thể tham dự</option>
+                    <option value="no">Không thể tham dự</option>
+                  </select>
+                </label>
+
+                <button
+                  type="submit"
+                  className="btn btn--primary modal__submit"
+                  disabled={rsvpStatus === 'loading'}
+                >
+                  {rsvpStatus === 'loading' ? 'Đang gửi...' : 'Gửi ngay'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
