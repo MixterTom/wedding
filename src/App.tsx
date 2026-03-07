@@ -741,9 +741,9 @@ function App() {
       {/* Nhà trai / nhà gái */}
       <section className="section families">
         <p className="quote">
-          “Hôn nhân là chuyện cả đời,
+          “Chỉ cần <span className="family-card__name">em</span> nắm tay <span className="family-card__name">anh</span>
           <br />
-          Yêu người vừa ý, cưới người mình thương...”
+          bao nhiêu sóng gió sẽ thành <span className="family-card__name">Tình Yêu</span>!”
         </p>
 
         <div className="families__cards">
