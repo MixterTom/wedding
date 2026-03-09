@@ -488,7 +488,7 @@ function App() {
     minutes: '--',
     seconds: '--'
   })
-
+  const [giftType, setGiftType] = useState<"groom" | "bride" | null>(null)
   const [editMode, setEditMode] = useState(false)
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
@@ -1072,10 +1072,23 @@ function App() {
             className="btn"
             onClick={() => {
               setIsRsvpOpen(false)
+              setGiftType("groom")
               setIsGiftOpen(true)
             }}
           >
-            Gửi mừng cưới
+            Gửi mừng chú rể
+          </button>
+
+          <button
+            type="button"
+            className="btn"
+            onClick={() => {
+              setIsRsvpOpen(false)
+              setGiftType("bride")
+              setIsGiftOpen(true)
+            }}
+          >
+            Gửi mừng cô dâu
           </button>
         </div>
       </section>
@@ -1085,13 +1098,9 @@ function App() {
         <h2 className="thankyou__title">Lời cảm ơn</h2>
 
         <p className="thankyou__text">
-          Sự hiện diện của mọi người trong ngày trọng đại là niềm vinh hạnh
-          và hạnh phúc lớn đối với chúng mình.
-        </p>
-
-        <p className="thankyou__text">
-          Xin chân thành cảm ơn tình cảm, lời chúc và sự yêu thương mà
-          mọi người đã dành cho Thanh Long &amp; Cẩm Thu.
+          Cảm ơn bạn đã dành tình cảm cho chúng mình! Sự hiện diện của bạn chính
+          là món quà ý nghĩa nhất và chúng mình vô cùng trân quý khi được
+          cùng bạn chia sẻ niềm hạnh phúc trong ngày trọng đại này.
         </p>
 
         <p className="thankyou__signature">
@@ -1101,7 +1110,7 @@ function App() {
       </section>
 
       <footer className="footer">
-        <p>Thiệp cưới online Thanh Long &amp; Cẩm Thu</p>
+        <p>Thiệp cưới online Thanh Long  &amp; Cẩm Thu</p>
       </footer>
 
       {/* Popup RSVP */}
@@ -1252,28 +1261,45 @@ function App() {
             >
               ×
             </button>
-            <h3 className="modal__title">Gửi mừng cưới</h3>
+
+            <h3 className="modal__title">
+              {giftType === "groom" ? "Mừng cưới chú rể" : "Mừng cưới cô dâu"}
+            </h3>
+
             <div className="modal__body">
-              <p style={{ marginBottom: 12 }}>
-                Bạn có thể quét mã QR bên dưới để gửi lời chúc &amp; mừng cưới đến vợ chồng
-                Thanh Long &amp; Cẩm Thu. Xin chân thành cảm ơn tấm lòng của bạn!
-              </p>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-                <img
-                  src="/banking.jpg"
-                  alt="QR mừng cưới NGUYEN TRAN THANH LONG"
-                  style={{
-                    maxWidth: '260px',
-                    width: '100%',
-                    borderRadius: 16,
-                    boxShadow: '0 10px 30px rgba(15,23,42,0.2)'
-                  }}
-                />
-              </div>
-              <BankCopyButton accountNumber="1880297846" />
-              <p style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'center', marginTop: 8 }}>
-                NGUYEN TRAN THANH LONG • BIDV - PGD Nguyễn Oanh
-              </p>
+
+              {giftType === "groom" && (
+                <>
+                  <img
+                    src="/banking.jpg"
+                    alt="QR chú rể"
+                    className="bank-qr"
+                  />
+
+                  <BankCopyButton accountNumber="1880297846" />
+
+                  <p className="bank-info">
+                    NGUYEN TRAN THANH LONG • BIDV - PGD Nguyễn Oanh
+                  </p>
+                </>
+              )}
+
+              {giftType === "bride" && (
+                <>
+                  <img
+                    src="/bank1.png"
+                    alt="QR cô dâu"
+                    className="bank-qr"
+                  />
+
+                  <BankCopyButton accountNumber="849588889999" />
+
+                  <p className="bank-info">
+                    CAM THU • Techcombank
+                  </p>
+                </>
+              )}
+
             </div>
           </div>
         </div>
