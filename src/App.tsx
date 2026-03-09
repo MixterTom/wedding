@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
+
 const MUSIC_URL =
   'https://statics.pancake.vn/web-media/30/2d/16/de/6ef7c8fcf6b86241ef11f111d6d3269a74a27c5ab5a451854d150895-w:0-h:0-l:2426583-t:audio/mpeg.mp3'
+
+
 
 // Cloudinary config (chỉ dùng public URL, không để lộ api_key / secret ở frontend)
 const CLOUDINARY_BASE =
@@ -421,7 +424,6 @@ const ALBUM_IMAGES = [
 
 const WEDDING_TIME = new Date('2026-04-05T11:00:00+07:00')
 
-// ✅ Dán URL Apps Script Web App của bạn vào đây sau khi deploy
 // Xem hướng dẫn trong file google_sheets_setup.md
 const GOOGLE_SHEET_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNE_81w8hWWkHztkvXJSyT316d7-Nu1u3a1YjZD4XyGFRKFvXbDuJMLH1joASvenBrUA/exec'
 
@@ -486,10 +488,12 @@ function App() {
     minutes: '--',
     seconds: '--'
   })
+
   const [editMode, setEditMode] = useState(false)
   const [isRsvpOpen, setIsRsvpOpen] = useState(false)
   const [isGiftOpen, setIsGiftOpen] = useState(false)
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [attendStatus, setAttendStatus] = useState('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [heroBgUrl, setHeroBgUrl] = useState(() =>
     getImageUrl('https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg')
@@ -620,26 +624,29 @@ function App() {
 
   const handleSubmitRsvp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (rsvpStatus === 'loading') return
+
+    if (rsvpStatus === "loading") return
 
     const form = e.currentTarget
     const data = Object.fromEntries(new FormData(form).entries())
 
-    setRsvpStatus('loading')
+    setRsvpStatus("loading")
+
     try {
-      // no-cors: browser không cho đọc response body, nhưng nếu không throw
-      // thì request đã tới được Apps Script → coi là thành công
-      await fetch(GOOGLE_SHEET_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify(data),
+
+      // gửi request nhưng KHÔNG đợi
+      fetch(GOOGLE_SHEET_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(data)
       })
-      // Nếu fetch không throw → ghi sheet đã thành công
-      setRsvpStatus('success')
+
+      // hiện success ngay
+      setRsvpStatus("success")
       form.reset()
+
     } catch {
-      // Chỉ vào đây khi mạng thật sự lỗi (offline, DNS fail, v.v.)
-      setRsvpStatus('error')
+      setRsvpStatus("error")
     }
   }
 
@@ -740,11 +747,7 @@ function App() {
 
       {/* Nhà trai / nhà gái */}
       <section className="section families">
-        <p className="quote">
-          “Chỉ cần <span className="family-card__name">em</span> nắm tay <span className="family-card__name">anh</span>
-          <br />
-          bao nhiêu sóng gió sẽ thành <span className="family-card__name">Tình Yêu</span>!”
-        </p>
+
 
         <div className="families__cards">
           {/* Nhà Trai */}
@@ -828,8 +831,7 @@ function App() {
               <p className="couple-card__name">Cẩm Thu</p>
               <p className="couple-card__label">Cô dâu</p>
               <p className="couple-card__text">
-                Cô gái luôn mang lại tiếng cười, là nguồn cảm hứng khiến Long muốn trở nên tốt
-                hơn mỗi ngày.
+               Cô gái ấm áp, dễ thương và dịu dàng, lặng lẽ trở thành hậu phương vững chắc cho Long trên mọi hành trình.
               </p>
             </figcaption>
           </figure>
@@ -1074,45 +1076,106 @@ function App() {
         </div>
       </section>
 
+      <section className="section thankyou fade-in">
+
+        <h2 className="thankyou__title">Lời cảm ơn</h2>
+
+        <p className="thankyou__text">
+          Sự hiện diện của mọi người trong ngày trọng đại là niềm vinh hạnh
+          và hạnh phúc lớn đối với chúng con.
+        </p>
+
+        <p className="thankyou__text">
+          Xin chân thành cảm ơn tình cảm, lời chúc và sự yêu thương mà
+          mọi người đã dành cho Thanh Long &amp; Cẩm Thu.
+        </p>
+
+        <p className="thankyou__signature">
+          Thanh Long &amp; Cẩm Thu
+        </p>
+
+      </section>
+
       <footer className="footer">
         <p>Thiệp cưới online Thanh Long &amp; Cẩm Thu</p>
       </footer>
 
       {/* Popup RSVP */}
       {isRsvpOpen && (
-        <div className="modal-backdrop" onClick={() => { setIsRsvpOpen(false); setRsvpStatus('idle') }}>
+        <div
+          className="modal-backdrop"
+          onClick={() => {
+            setIsRsvpOpen(false)
+            setRsvpStatus("idle")
+          }}
+        >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="modal__close"
-              onClick={() => { setIsRsvpOpen(false); setRsvpStatus('idle') }}
+              onClick={() => {
+                setIsRsvpOpen(false)
+                setRsvpStatus("idle")
+              }}
             >
               ×
             </button>
+
             <h3 className="modal__title">Xác nhận tham dự</h3>
 
-            {rsvpStatus === 'success' ? (
+            {rsvpStatus === "success" ? (
               <div className="rsvp-result rsvp-result--success">
-                <div className="rsvp-result__icon">🎉</div>
-                <p className="rsvp-result__title">Cảm ơn bạn rất nhiều!</p>
-                <p className="rsvp-result__desc">Thông tin của bạn đã được ghi nhận. Hẹn gặp bạn trong ngày trọng đại của tụi mình nhé!</p>
+
+                {/* Icon */}
+                <img
+                  src={attendStatus === "yes" ? "https://res.cloudinary.com/dko2gxv0s/image/upload/v1773074432/T%C3%ADm_o%E1%BA%A3i_h%C6%B0%C6%A1ng_T%C3%ADm_pastel_Hi%E1%BB%87n_%C4%91%E1%BA%A1i_S%E1%BB%95_l%C6%B0u_ni%E1%BB%87m_%E1%BA%A2nh_gh%C3%A9p_Thi%E1%BB%87p_%E1%BA%A3nh_flzqci.png" : "/images/flower.png"}
+                  alt="result"
+                  className="rsvp-result__image"
+                />
+
+                {attendStatus === "yes" ? (
+                  <>
+                    <p className="rsvp-result__title">
+                      Cảm ơn bạn đã xác nhận tham dự!
+                    </p>
+                    <p className="rsvp-result__desc">
+                      Cảm ơn bạn đã dành thời gian đến chung vui cùng chúng mình trong ngày trọng đại. Hẹn gặp bạn trong ngày cưới nhé!
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="rsvp-result__title">
+                      Cảm ơn bạn đã phản hồi!
+                    </p>
+                    <p className="rsvp-result__desc">
+                      Tụi mình rất tiếc vì bạn không thể tham dự. Hy vọng sẽ sớm gặp
+                      lại bạn trong dịp gần nhất!
+                    </p>
+                  </>
+                )}
+
                 <button
                   type="button"
                   className="btn btn--primary"
-                  onClick={() => { setIsRsvpOpen(false); setRsvpStatus('idle') }}
+                  onClick={() => {
+                    setIsRsvpOpen(false)
+                    setRsvpStatus("idle")
+                  }}
                 >
                   Đóng
                 </button>
               </div>
-            ) : rsvpStatus === 'error' ? (
+            ) : rsvpStatus === "error" ? (
               <div className="rsvp-result rsvp-result--error">
-                <div className="rsvp-result__icon">😢</div>
                 <p className="rsvp-result__title">Gửi không thành công</p>
-                <p className="rsvp-result__desc">Có lỗi xảy ra, bạn thử lại sau nhé hoặc liên hệ trực tiếp với tụi mình!</p>
+                <p className="rsvp-result__desc">
+                  Có lỗi xảy ra, bạn thử lại sau nhé hoặc liên hệ trực tiếp với tụi
+                  mình!
+                </p>
                 <button
                   type="button"
                   className="btn btn--primary"
-                  onClick={() => setRsvpStatus('idle')}
+                  onClick={() => setRsvpStatus("idle")}
                 >
                   Thử lại
                 </button>
@@ -1121,8 +1184,13 @@ function App() {
               <form className="modal__form" onSubmit={handleSubmitRsvp}>
                 <label className="field">
                   <span>Tên của bạn là?</span>
-                  <input name="full_name" required placeholder="Ví dụ: Nguyễn Văn A" />
+                  <input
+                    name="full_name"
+                    required
+                    placeholder="Ví dụ: Nguyễn Bảo Anh"
+                  />
                 </label>
+
                 <label className="field">
                   <span>Bạn là gì của Dâu Rể?</span>
                   <input
@@ -1130,6 +1198,7 @@ function App() {
                     placeholder="Bạn học, đồng nghiệp, người thân..."
                   />
                 </label>
+
                 <label className="field">
                   <span>Lời chúc đến Dâu Rể</span>
                   <textarea
@@ -1138,9 +1207,15 @@ function App() {
                     placeholder="Gửi vài lời chúc dễ thương nhé!"
                   />
                 </label>
+
                 <label className="field">
                   <span>Bạn có tham dự không?</span>
-                  <select name="status" defaultValue="">
+                  <select
+                    name="status"
+                    required
+                    defaultValue=""
+                    onChange={(e) => setAttendStatus(e.target.value)}
+                  >
                     <option value="" disabled>
                       Chọn giúp tụi mình
                     </option>
@@ -1152,9 +1227,9 @@ function App() {
                 <button
                   type="submit"
                   className="btn btn--primary modal__submit"
-                  disabled={rsvpStatus === 'loading'}
+                  disabled={rsvpStatus === "loading"}
                 >
-                  {rsvpStatus === 'loading' ? 'Đang gửi...' : 'Gửi ngay'}
+                  {rsvpStatus === "loading" ? "Đang gửi..." : "Gửi ngay"}
                 </button>
               </form>
             )}
@@ -1226,6 +1301,7 @@ function App() {
           </div>
         </div>
       )}
+
     </div>
   )
 }
