@@ -851,14 +851,14 @@
 .highlight__track {
   display: flex;
   width: max-content;
-  animation: marquee 22s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 
 .highlight__item {
-  padding: 0 3px;
-  margin: 0;
-  width: 260px;
-  height: 360px;
+  flex: 0 0 auto;
+  width: 360px;
+  height: 560px;
+  margin-right: -10px;
   overflow: hidden;
 }
 
@@ -944,7 +944,6 @@
 }
 
 .image-edit-toggle {
-  display: none;
   position: fixed;
   right: 16px;
   bottom: 16px;

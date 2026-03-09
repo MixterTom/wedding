@@ -503,6 +503,20 @@ function App() {
   const heroRef = useRef<HTMLElement | null>(null)
   const heroBgRef = useRef<HTMLDivElement | null>(null)
 
+  const images = [
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773078571/wdvw0glie8sfyy4tvmzk.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773078507/rnunbek2yewa9kmfejdh.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592778/mto81e1r3vyfpzxbywt4.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773076779/BAC04173_trlmsu.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592875/pauluqwvhz1en5m0mkrg.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773078701/eqdwukrbdxsetunemplw.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773076507/mupasmhkv93inerwamxp.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773076520/ep31hucqy7crbgtfmdyl.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1773076553/vjmio5gsq85whzh7azkt.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772591914/nrmxmxkgkm6ta0syhtxs.jpg',
+    'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772593725/mogn13obmayy7n2ozlsc.jpg'
+  ]
+
   // Reload hero background khi localStorage thay đổi
   useEffect(() => {
     const handleImageUpdate = () => {
@@ -831,7 +845,7 @@ function App() {
               <p className="couple-card__name">Cẩm Thu</p>
               <p className="couple-card__label">Cô dâu</p>
               <p className="couple-card__text">
-               Cô gái ấm áp, dễ thương và dịu dàng, lặng lẽ trở thành hậu phương vững chắc cho Long trên mọi hành trình.
+                Cô gái ấm áp, dễ thương và dịu dàng, lặng lẽ trở thành hậu phương vững chắc cho Long trên mọi hành trình.
               </p>
             </figcaption>
           </figure>
@@ -995,31 +1009,21 @@ function App() {
       {/* Highlight */}
       <section className="section highlight">
         <h2 className="highlight__title">Khoảnh khắc đặc biệt</h2>
+
         <div className="highlight__marquee">
           <div className="highlight__track">
-            {['https://res.cloudinary.com/dko2gxv0s/image/upload/v1772591914/nrmxmxkgkm6ta0syhtxs.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772593725/mogn13obmayy7n2ozlsc.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592132/sozgpsix6oqhkdvrta59.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592778/mto81e1r3vyfpzxbywt4.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592875/pauluqwvhz1en5m0mkrg.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772592940/qdskfi2ay4k8fyd84lb4.jpg',
-              'https://res.cloudinary.com/dko2gxv0s/image/upload/v1772593588/wekybeliviieszwclymg.jpg'
-            ].map(
-              (src, idx) => (
-                <figure key={`${src}-${idx}`} className="highlight__item fade-in">
-                  <EditableImage
-                    initialSrc={src}
-                    alt="Khoảnh khắc của Thanh Long &amp; Cẩm Thu"
-                    editMode={editMode}
-                    loading="lazy"
-                    label={`Highlight ${idx + 1}`}
-                  />
-                </figure>
-              )
-            )}
+            {[...images, ...images].map((src, idx) => (
+              <figure key={idx} className="highlight__item fade-in">
+                <img
+                  src={src}
+                  alt="Khoảnh khắc của Thanh Long & Cẩm Thu"
+                  loading="lazy"
+                />
+              </figure>
+            ))}
           </div>
         </div>
+
       </section>
 
       {/* Album hình cưới */}
@@ -1082,7 +1086,7 @@ function App() {
 
         <p className="thankyou__text">
           Sự hiện diện của mọi người trong ngày trọng đại là niềm vinh hạnh
-          và hạnh phúc lớn đối với chúng con.
+          và hạnh phúc lớn đối với chúng mình.
         </p>
 
         <p className="thankyou__text">
