@@ -944,6 +944,7 @@
 }
 
 .image-edit-toggle {
+  display: none;
   position: fixed;
   right: 16px;
   bottom: 16px;
