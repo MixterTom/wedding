@@ -845,7 +845,7 @@ function App() {
           <span className="section-title__text">Thư mời</span>
           <span className="section-title__line" />
         </div>
-        <p className="letter__subtitle">THAM DỰ LỄ CƯỚI THANH LONG &amp; THU</p>
+        <p className="letter__subtitle">THAM DỰ LỄ CƯỚI THANH LONG &amp; CẨM THU</p>
         <p className="letter__body">
           Trân trọng kính mời Quý khách đến dự bữa tiệc thân mật chung vui cùng gia đình
           chúng tôi trong ngày trọng đại.
