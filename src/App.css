@@ -851,7 +851,7 @@
 .highlight__track {
   display: flex;
   width: max-content;
-  animation: marquee 35s linear infinite;
+  animation: marquee 45s linear infinite;
 }
 
 .highlight__item {
