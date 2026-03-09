@@ -797,7 +797,7 @@ function App() {
               </div>
               <div className="family-card__parent">
                 <span className="family-card__parent-title">Bà</span>
-                <span className="family-card__parent-name">Nguyễn Thị Cẩm Vân</span>
+                <span className="family-card__parent-name">Trần Thị Cẩm Vân</span>
               </div>
             </div>
           </div>
