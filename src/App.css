@@ -856,8 +856,8 @@
 
 .highlight__item {
   flex: 0 0 auto;
-  width: 360px;
-  height: 560px;
+  width: 260px;
+  height: 360px;
   margin-right: -10px;
   overflow: hidden;
 }
