@@ -761,7 +761,11 @@ function App() {
 
       {/* Nhà trai / nhà gái */}
       <section className="section families">
-
+        <p className="families__quote">
+          " Một lời hứa, một cái nắm tay
+          <br />
+          Một đời bên nhau ! "
+        </p>
 
         <div className="families__cards">
           {/* Nhà Trai */}
@@ -782,8 +786,7 @@ function App() {
           </div>
 
           {/* Divider trái tim */}
-          <div className="families__divider">
-          </div>
+          <div className="families__divider"></div>
 
           {/* Nhà Gái */}
           <div className="family-card">
