@@ -1132,7 +1132,7 @@ function App() {
 
                 {/* Icon */}
                 <img
-                  src={attendStatus === "yes" ? "https://res.cloudinary.com/dko2gxv0s/image/upload/v1773074432/T%C3%ADm_o%E1%BA%A3i_h%C6%B0%C6%A1ng_T%C3%ADm_pastel_Hi%E1%BB%87n_%C4%91%E1%BA%A1i_S%E1%BB%95_l%C6%B0u_ni%E1%BB%87m_%E1%BA%A2nh_gh%C3%A9p_Thi%E1%BB%87p_%E1%BA%A3nh_flzqci.png" : "/images/flower.png"}
+                  src={attendStatus === "yes" ? "https://res.cloudinary.com/dko2gxv0s/image/upload/v1773074432/T%C3%ADm_o%E1%BA%A3i_h%C6%B0%C6%A1ng_T%C3%ADm_pastel_Hi%E1%BB%87n_%C4%91%E1%BA%A1i_S%E1%BB%95_l%C6%B0u_ni%E1%BB%87m_%E1%BA%A2nh_gh%C3%A9p_Thi%E1%BB%87p_%E1%BA%A3nh_flzqci.png" : "https://res.cloudinary.com/dko2gxv0s/image/upload/v1773074432/T%C3%ADm_o%E1%BA%A3i_h%C6%B0%C6%A1ng_T%C3%ADm_pastel_Hi%E1%BB%87n_%C4%91%E1%BA%A1i_S%E1%BB%95_l%C6%B0u_ni%E1%BB%87m_%E1%BA%A2nh_gh%C3%A9p_Thi%E1%BB%87p_%E1%BA%A3nh_flzqci.png"}
                   alt="result"
                   className="rsvp-result__image"
                 />

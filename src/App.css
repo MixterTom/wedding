@@ -1265,6 +1265,23 @@
   font-family: 'Great Vibes', system-ui;
 }
 
+@media (max-width: 768px) {
+
+  .rsvp-result__title {
+    font-size: 26px;
+  }
+
+  .rsvp-result__desc {
+    font-size: 14px;
+    max-width: 90%;
+  }
+
+  .rsvp-result__image {
+    max-width: 180px;
+  }
+
+}
+
 /* Image Viewer Modal */
 .image-viewer-backdrop {
   position: fixed;
