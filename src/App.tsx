@@ -864,8 +864,8 @@ function App() {
         </div>
         <p className="letter__subtitle">THAM DỰ LỄ CƯỚI THANH LONG &amp; CẨM THU</p>
         <p className="letter__body">
-          Trân trọng kính mời Quý khách đến dự bữa tiệc thân mật chung vui cùng gia đình
-          chúng tôi trong ngày trọng đại.
+          Trân trọng kính mời Quý vị đến dự bữa tiệc thân mật chung vui cùng gia đình
+          chúng tôi trong ngày trọng đại. Sự hiện diện của Quý vị là niềm vinh hạnh của Gia đình chúng tôi!
         </p>
       </section>
 
@@ -1155,7 +1155,8 @@ function App() {
                       Cảm ơn bạn đã xác nhận tham dự!
                     </p>
                     <p className="rsvp-result__desc">
-                      Cảm ơn bạn đã dành thời gian đến chung vui cùng chúng mình trong ngày trọng đại. Hẹn gặp bạn trong ngày cưới nhé!
+                      Cảm ơn bạn đã dành thời gian đến chung vui cùng Gia đình chúng tôi trong ngày trọng đại.
+                      Hẹn gặp bạn trong ngày cưới nhé!
                     </p>
                   </>
                 ) : (
@@ -1164,8 +1165,8 @@ function App() {
                       Cảm ơn bạn đã phản hồi!
                     </p>
                     <p className="rsvp-result__desc">
-                      Tụi mình rất tiếc vì bạn không thể tham dự. Hy vọng sẽ sớm gặp
-                      lại bạn trong dịp gần nhất!
+                      Cô dâu và chú rể rất tiếc vì bạn không thể tham dự.
+                      Cảm ơn bạn đã dành thời gian phản hồi. Hy vọng sẽ sớm gặp bạn vào dịp khác!
                     </p>
                   </>
                 )}
@@ -1225,7 +1226,7 @@ function App() {
                 </label>
 
                 <label className="field">
-                  <span>Bạn có tham dự không?</span>
+                  <span>Xác nhận tham dự không</span>
                   <select
                     name="status"
                     required
@@ -1233,7 +1234,7 @@ function App() {
                     onChange={(e) => setAttendStatus(e.target.value)}
                   >
                     <option value="" disabled>
-                      Chọn giúp tụi mình
+                      Lựa chọn
                     </option>
                     <option value="yes">Có thể tham dự</option>
                     <option value="no">Không thể tham dự</option>
