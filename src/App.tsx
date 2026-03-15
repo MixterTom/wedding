@@ -984,7 +984,7 @@ function App() {
         </p>
 
         <p className="location__address">
-          106/47 Nguyễn Thị Tú, Bình Hưng Hòa B, Bình Tân, TP. Hồ Chí Minh
+        112 Đ. Võ Thị Liễu, An Phú Đông, Quận 12, Thành phố Hồ Chí Minh, Việt Nam
         </p>
 
         <div className="location__map">
