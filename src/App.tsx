@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
-
+import HiddenMansionsTimeline from './components/HiddenMansionsTimeline.tsx'
 
 const MUSIC_URL =
   'https://statics.pancake.vn/web-media/30/2d/16/de/6ef7c8fcf6b86241ef11f111d6d3269a74a27c5ab5a451854d150895-w:0-h:0-l:2426583-t:audio/mpeg.mp3'
@@ -984,7 +984,7 @@ function App() {
         </p>
 
         <p className="location__address">
-        112 Đ. Võ Thị Liễu, An Phú Đông, Quận 12, Thành phố Hồ Chí Minh, Việt Nam
+          112 Đ. Võ Thị Liễu, An Phú Đông, Quận 12, Thành phố Hồ Chí Minh, Việt Nam
         </p>
 
         <div className="location__map">
@@ -1008,7 +1008,9 @@ function App() {
           Xem trên Google Map
         </a>
       </section>
-
+      <section className="section">
+        <HiddenMansionsTimeline />
+      </section>
       {/* Highlight */}
       <section className="section highlight">
         <h2 className="highlight__title">Khoảnh khắc đặc biệt</h2>
