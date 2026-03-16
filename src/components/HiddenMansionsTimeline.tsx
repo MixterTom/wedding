@@ -1,4 +1,4 @@
-import { Camera, Menu, PartyPopper, Wine } from "lucide-react";
+import { Camera, PartyPopper, Wine } from "lucide-react";
 import "./HiddenMansionsTimeline.css";
 
 type TimelineType = "gate" | "rings" | "toast" | "photo";
