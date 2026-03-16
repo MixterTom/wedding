@@ -1,4 +1,5 @@
 import { Camera, Menu, PartyPopper, Wine } from "lucide-react";
+import "./HiddenMansionsTimeline.css";
 
 type TimelineType = "gate" | "rings" | "toast" | "photo";
 
@@ -20,33 +21,17 @@ type TimelineItemProps = {
 };
 
 const events: EventItem[] = [
-  {
-    time: "17 : 00",
-    title: "Đón khách",
-    type: "gate",
-  },
-  {
-    time: "18 : 30",
-    title: "Lễ Thành Hôn",
-    type: "rings",
-  },
-  {
-    time: "19 : 00",
-    title: "Khai tiệc",
-    type: "toast",
-  },
-  {
-    time: "20 : 00",
-    title: "Dance",
-    type: "photo",
-  },
+  { time: "17 : 00", title: "Đón khách", type: "gate" },
+  { time: "18 : 30", title: "Lễ Thành Hôn", type: "rings" },
+  { time: "19 : 00", title: "Khai tiệc", type: "toast" },
+  { time: "20 : 00", title: "Dance", type: "photo" },
 ];
 
 function FloralTopLeft() {
   return (
     <svg
       viewBox="0 0 220 220"
-      className="absolute left-0 top-0 h-40 w-40 opacity-60"
+      className="hm-floral hm-floral--top-left"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -74,7 +59,7 @@ function FloralBottomRight() {
   return (
     <svg
       viewBox="0 0 240 240"
-      className="absolute bottom-0 right-0 h-44 w-44 opacity-60"
+      className="hm-floral hm-floral--bottom-right"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -96,7 +81,7 @@ function FloralBottomRight() {
 
 function ArchSvg() {
   return (
-    <svg viewBox="0 0 64 64" className="h-10 w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 64 64" className="hm-icon-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 56H52" />
         <path d="M18 56V24C18 14.059 26.059 6 36 6C45.941 6 54 14.059 54 24V56" />
@@ -111,7 +96,7 @@ function ArchSvg() {
 
 function RingsSvg() {
   return (
-    <svg viewBox="0 0 64 64" className="h-10 w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 64 64" className="hm-icon-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="24" cy="38" r="12" />
         <circle cx="40" cy="38" r="12" />
@@ -125,66 +110,51 @@ function RingsSvg() {
 }
 
 function TimelineIcon({ type }: TimelineIconProps) {
-  const commonClass = "h-10 w-10 text-[#a36a12]";
+  const commonClass = "hm-icon-lucide";
 
-  if (type === "gate") {
-    return <ArchSvg />;
-  }
-
-  if (type === "rings") {
-    return <RingsSvg />;
-  }
-
-  if (type === "toast") {
-    return <Wine className={commonClass} strokeWidth={1.8} />;
-  }
+  if (type === "gate") return <ArchSvg />;
+  if (type === "rings") return <RingsSvg />;
+  if (type === "toast") return <Wine className={commonClass} strokeWidth={1.8} />;
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="hm-photo-icon">
       <Camera className={commonClass} strokeWidth={1.8} />
-      <PartyPopper
-        className="absolute -right-3 -top-2 h-4 w-4 text-[#a36a12]"
-        strokeWidth={1.8}
-      />
+      <PartyPopper className="hm-party-icon" strokeWidth={1.8} />
     </div>
   );
 }
 
 function TimelineItem({ time, title, type, isLast }: TimelineItemProps) {
   return (
-    <div className="grid grid-cols-[72px_20px_1fr] items-center gap-3 min-h-[92px]">
-      <div className="flex items-center justify-center text-[#a36a12]">
+    <div className="hm-timeline-item">
+      <div className="hm-timeline-icon-wrap">
         <TimelineIcon type={type} />
       </div>
 
-      <div className="relative flex h-full justify-center">
-        <div className={`w-px bg-[#b17418] ${isLast ? "h-[72px]" : "h-full"}`} />
-        <div className="absolute top-1/2 h-px w-4 -translate-y-1/2 bg-[#b17418]" />
+      <div className="hm-timeline-line-wrap">
+        <div className={`hm-timeline-line ${isLast ? "hm-timeline-line--last" : ""}`} />
+        <div className="hm-timeline-line-horizontal" />
       </div>
 
-      <div className="py-4">
-        <div className="text-[28px] font-semibold tracking-[0.08em] text-[#a36a12] leading-none sm:text-[30px]">
-          {time}
-        </div>
-        <div className="mt-2 text-[16px] font-medium text-[#6e6a6c] sm:text-[17px]">
-          {title}
-        </div>
+      <div className="hm-timeline-content">
+        <div className="hm-timeline-time">{time}</div>
+        <div className="hm-timeline-title">{title}</div>
       </div>
     </div>
   );
 }
 
-export default function HiddenMansionsInvitation() {
+export default function HiddenMansionsTimeline() {
   return (
-    <div className="min-h-screen bg-[#f7f1ef] px-3 py-2 text-[#2f2f2f]">
-      <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-[28px] border border-[#efe5e1] bg-[#f8f3f1] shadow-[0_10px_30px_rgba(80,40,20,0.08)]">
-        <div className="pointer-events-none absolute inset-0">
+    <div className="hm-wrapper">
+      <div className="hm-card">
+        <div className="hm-bg-layer">
           <FloralTopLeft />
           <FloralBottomRight />
 
           <svg
             viewBox="0 0 400 860"
-            className="absolute inset-0 h-full w-full opacity-30"
+            className="hm-dots"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
@@ -200,23 +170,19 @@ export default function HiddenMansionsInvitation() {
           </svg>
         </div>
 
-        <div className="relative px-6 pb-10 pt-8 sm:px-7">
-          <div className="text-center">
-            <p className="text-[18px] font-semibold leading-snug text-[#2f2f2f] sm:text-[20px]">
-              Tại : Hidden Mansions Saigon Resort
-            </p>
-            <p className="mx-auto mt-2 max-w-[290px] text-[16px] leading-8 text-[#454042] sm:text-[17px]">
+        <div className="hm-content">
+          <div className="hm-header">
+            <p className="hm-venue">Tại : Hidden Mansions Saigon Resort</p>
+            <p className="hm-address">
               112 Đ. Võ Thị Liễu, An Phú Đông, Quận 12,
               <br />
               Thành phố Hồ Chí Minh
             </p>
           </div>
 
-          <h2 className="mt-8 text-center text-[24px] font-bold uppercase tracking-[0.08em] text-[#a36a12] sm:text-[26px]">
-            Timeline
-          </h2>
+          <h2 className="hm-heading">Timeline</h2>
 
-          <div className="mx-auto mt-5 w-full max-w-[320px]">
+          <div className="hm-timeline">
             {events.map((event, index) => (
               <TimelineItem
                 key={event.time}
@@ -228,22 +194,14 @@ export default function HiddenMansionsInvitation() {
             ))}
           </div>
 
-          <div className="mt-14 px-3 text-center">
-            <p className="font-serif text-[24px] italic leading-[1.55] text-[#5b4d56] sm:text-[26px]">
+          <div className="hm-footer-text">
+            <p>
               Sự hiện diện của Quý vị
               <br />
               là niềm vinh hạnh của Gia đình chúng tôi!
             </p>
           </div>
         </div>
-
-        <button
-          className="absolute bottom-5 right-5 flex h-14 w-14 items-center justify-center rounded-full bg-[#a67b96] text-white shadow-[0_8px_20px_rgba(125,87,115,0.35)] transition active:scale-95"
-          aria-label="Mở menu"
-          type="button"
-        >
-          <Menu className="h-7 w-7" strokeWidth={2.2} />
-        </button>
       </div>
     </div>
   );
