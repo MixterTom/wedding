@@ -60,6 +60,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #a36a12;
+  font-family: 'Great Vibes', 'Ephesis', system-ui;
 }
 
 .hm-timeline {
@@ -138,12 +139,13 @@
   margin-top: 56px;
   padding: 0 12px;
   text-align: center;
+  font-family: 'Great Vibes', 'Ephesis', system-ui;
 }
 
 .hm-footer-text p {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 24px;
+  font-size: 18px;
   font-style: italic;
   line-height: 1.55;
   color: #5b4d56;

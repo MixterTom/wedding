@@ -69,15 +69,6 @@ export default function HiddenMansionsTimeline() {
         <div className="hm-overlay" />
 
         <div className="hm-content">
-          <div className="hm-header">
-            <p className="hm-venue">Tại : Hidden Mansions Saigon Resort</p>
-            <p className="hm-address">
-              112 Đ. Võ Thị Liễu, An Phú Đông, Quận 12,
-              <br />
-              Thành phố Hồ Chí Minh
-            </p>
-          </div>
-
           <h2 className="hm-heading">Timeline</h2>
 
           <div className="hm-timeline">
