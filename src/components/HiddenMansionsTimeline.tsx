@@ -27,9 +27,9 @@ const BG_IMAGE =
 
 const events: EventItem[] = [
   { time: "17 : 00", title: "Đón khách", type: "gate" },
-  { time: "18 : 30", title: "Lễ Thành Hôn", type: "rings" },
-  { time: "19 : 00", title: "Khai tiệc", type: "toast" },
-  { time: "20 : 00", title: "Dance", type: "photo" },
+  { time: "18 : 00", title: "Lễ Thành Hôn", type: "rings" },
+  { time: "18 : 30", title: "Khai tiệc", type: "toast" },
+  { time: "19 : 00", title: "Dance", type: "photo" },
 ];
 
 function TimelineItem({ time, title, type, isLast }: TimelineItemProps) {
@@ -67,7 +67,6 @@ export default function HiddenMansionsTimeline() {
         }}
       >
         <div className="hm-overlay" />
-
         <div className="hm-content">
           <h2 className="hm-heading">Timeline</h2>
 
@@ -83,8 +82,8 @@ export default function HiddenMansionsTimeline() {
             ))}
           </div>
 
-          <div className="hm-footer-text">
-            <p>
+          <div >
+            <p className="hm-footer-text">
               Sự hiện diện của Quý vị
               <br />
               là niềm vinh hạnh của Gia đình chúng tôi!
